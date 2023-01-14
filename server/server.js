@@ -13,20 +13,23 @@ const io = new Server(server);
 async function main(){
     const api = new ChatGPTAPIBrowser({
         email: process.env.OPENAI_EMAIL,
-        password: process.env.OPENAI_PASSWORD
+        password: process.env.OPENAI_PASSWORD,
     })
+    
+    let users = {};
 
     await api.initSession()
+    io.on('connection', async (socket) => {
+        let alias = socket.handshake.query.alias;
+        console.log('User '+alias+' connected with id: '+socket.id);
+        users[alias] = socket.id;
+    
+        const result = await api.sendMessage('What is rust programming language')
+        console.log(result.response)
+    });
 }
 
 main();
-
-io.on('connection', (socket) => {
-    users = {};
-    let alias = socket.handshake.query.alias;
-    console.log('User '+alias+' connected with id: '+socket.id);
-    users[alias] = socket.id;
-});
 
 server.listen(3000, () => {
     console.log('listening on *:3000');
