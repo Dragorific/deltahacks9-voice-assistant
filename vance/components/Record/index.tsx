@@ -23,7 +23,7 @@ type State = {
   pitch: string;
   error: string;
   end: string;
-  started: boolean;
+  started: string;
   results: string[];
   partialResults: string[];
 };
@@ -33,7 +33,7 @@ class Record extends Component<Props, State> {
     pitch: "",
     error: "",
     end: "",
-    started: false,
+    started: "",
     results: [],
     partialResults: [],
   };
@@ -53,7 +53,7 @@ class Record extends Component<Props, State> {
   onSpeechStart = (e: any) => {
     console.log("onSpeechStart: ", e);
     this.setState({
-      started: true,
+      started: '√',
     });
   };
   onSpeechRecognized = (e: SpeechRecognizedEvent) => {
@@ -65,10 +65,9 @@ class Record extends Component<Props, State> {
   onSpeechEnd = (e: any) => {
     console.log("onSpeechEnd: ", e);
     this.setState({
-      end: "√",
-      started: false,
+      end: "√"
     });
-    this.props.onSpeechEnd(this.state.results);
+    console.log(this.state.results);
   };
   onSpeechError = (e: SpeechErrorEvent) => {
     console.log("onSpeechError: ", e);
@@ -81,6 +80,7 @@ class Record extends Component<Props, State> {
     this.setState({
       results: e.value!,
     });
+    this.props.onSpeechEnd(this.state.results);
   };
   onSpeechPartialResults = (e: SpeechResultsEvent) => {
     console.log("onSpeechPartialResults: ", e);
@@ -99,11 +99,12 @@ class Record extends Component<Props, State> {
       recognized: "",
       pitch: "",
       error: "",
-      started: false,
+      started: '',
       results: [],
       partialResults: [],
       end: "",
     });
+    console.log("started recording");
     try {
       await Voice.start("en-US");
       this.props.onSpeechStart();
@@ -112,8 +113,12 @@ class Record extends Component<Props, State> {
     }
   };
   _stopRecognizing = async () => {
+    console.log("stopped recording");
     try {
       await Voice.stop();
+      this.setState({
+        started: '',
+      });
     } catch (e) {
       console.error(e);
     }
@@ -135,7 +140,7 @@ class Record extends Component<Props, State> {
       recognized: "",
       pitch: "",
       error: "",
-      started: false,
+      started: '',
       results: [],
       partialResults: [],
       end: "",
@@ -181,7 +186,7 @@ class Record extends Component<Props, State> {
             </View>
           </TouchableHighlight>
         ) : (
-          <TouchableHighlight onLongPress={this._startRecognizing}>
+          <TouchableHighlight onPress={this._startRecognizing}>
             <View
               style={{
                 width: 75,
