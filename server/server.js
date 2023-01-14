@@ -10,6 +10,8 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
+app.use(express.json())
+
 async function main(){
     const api = new ChatGPTAPIBrowser({
         email: process.env.OPENAI_EMAIL,
@@ -19,13 +21,24 @@ async function main(){
     let users = {};
 
     await api.initSession()
+
+    app.post("/api/voice-chat", async (res, req) => {
+        const message = req.body.question;
+        console.log(message);
+        const result = await api.sendMessage(message);
+        res.json({"response": result});
+    })
+
     io.on('connection', async (socket) => {
         let alias = socket.handshake.query.alias;
         console.log('User '+alias+' connected with id: '+socket.id);
         users[alias] = socket.id;
-    
-        const result = await api.sendMessage('What is rust programming language')
-        console.log(result.response)
+
+        socket.on("new message", async (data) => {
+            console.log(data.question);
+            const result = await api.sendMessage(data.question);
+            io.to(users["desktop 2"]).emit("response", {"response": result.response});
+        })
     });
 }
 
