@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Tts from 'react-native-tts';
 import {
   View,
   Text,
@@ -11,12 +12,18 @@ import Record from "../Record";
 import axios from "axios";
 export default function Home() {
   const [speechText, setSpeechText] = useState("");
+  const [code, setCode] = useState("");
 
   const callApi = async(prompt: string) => {
     const {data} = await axios.post("http://192.168.0.7:3000/api/voice-chat", { question: prompt });
     console.log(data);
     return data;
   }
+
+  Tts.getInitStatus().then(() => {
+    Tts.speak('Hello, world!');
+  });
+  
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
@@ -24,10 +31,19 @@ export default function Home() {
         <TextInput
           multiline
           style={styles.textInput}
-          numberOfLines={6}
+          numberOfLines={3}
           value={speechText}
           maxLength={500}
-          editable={true}
+          editable={false}
+        />
+        <Text style={styles.label}>Code</Text>
+        <TextInput
+          multiline
+          style={styles.textInput}
+          numberOfLines={6}
+          value={code}
+          maxLength={500}
+          editable={false}          
         />
         <View
           style={{
@@ -37,13 +53,6 @@ export default function Home() {
             justifyContent: "space-between",
           }}
         >
-          <Button
-            title="Save"
-            color={"#007AFF"}
-            onPress={async () => {
-              console.log("save");
-            }}
-          />
           <Button
             title="Clear"
             color={"#007AFF"}
@@ -87,7 +96,7 @@ const styles = StyleSheet.create({
     width: "100%",
     flex: 1,
     padding: 10,
-    justifyContent: "center",
+    //justifyContent: "center",
   },
   textInput: {
     padding: 10,
@@ -100,9 +109,9 @@ const styles = StyleSheet.create({
     right: 0,
   },
   voiceContainer: {
-    height: "50%",
-    width: "100%",
+    height: "20%",
+    width: "25%",
     alignItems: "center",
-    justifyContent: "space-around",
+    //justifyContent: "space-around",
   },
 });
