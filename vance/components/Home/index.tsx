@@ -6,6 +6,7 @@ import {
   TextInput,
   StyleSheet,
   Button,
+  ScrollView,
   Pressable,
 } from "react-native";
 import Record from "../Record";
@@ -16,38 +17,64 @@ export default function Home() {
   const [disableRec, setDisableRec] = useState(false);
 
   const callApi = async(prompt: string) => {
-    const {data} = await axios.post("http://192.168.0.7:3000/api/voice-chat", { question: prompt });
+    const {data} = await axios.post("http://192.168.0.103:3000/api/voice-chat", { question: prompt });
+    let response = data.response;
     console.log(data);
-    console.log(data.response);
-    Tts.speak(data.response);
+    console.log(response);
+
+    // Segmenting the code and speech seperately
+    response = response.split("\n");
+    let bool = false;
+    let code = "";
+    let speech = "";
+
+    // Iterate over each line and seperate out the code blocks from the speech text
+    for (let line of response){
+      if(line.trim().startsWith("```") && !bool){
+        bool = true;
+        continue;
+      } else if (line.trim().startsWith("```") && bool){
+        bool = false;
+        code += "\n\n"
+        continue;
+      }
+    
+      if(bool){
+        code += line + "\n";
+      } else {
+        speech += line + "\n";
+      }
+    }
+
+    // Speak without saying code
+    Tts.speak(speech);
+    
+    // Set the boxes to the speech and code texts accordingly
+    setSpeechText(speech);
+    setCode(code);
+
     return data;
   }
 
   Tts.getInitStatus().then(() => {
-    Tts.setDefaultVoice('en-us-x-tpd-network');
+    //Tts.setDefaultVoice('en-us-x-tpd-network');
   });
   
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
+      <ScrollView style={styles.inputContainer}>
         <Text style={styles.label}>Speech Text</Text>
-        <TextInput
-          multiline
-          style={styles.textInput}
-          numberOfLines={3}
-          value={speechText}
-          maxLength={500}
-          editable={false}
-        />
+        <ScrollView style={styles.textInput}>
+          <Text>
+            {speechText}
+          </Text>
+        </ScrollView>
         <Text style={styles.label}>Code</Text>
-        <TextInput
-          multiline
-          style={styles.textInput}
-          numberOfLines={6}
-          value={code}
-          maxLength={500}
-          editable={false}          
-        />
+        <ScrollView style={styles.textInput}>
+          <Text>
+            {code}        
+          </Text>
+        </ScrollView>
         <View
           style={{
             alignItems: "flex-end",
@@ -61,10 +88,11 @@ export default function Home() {
             color={"#007AFF"}
             onPress={() => {
               setSpeechText("");
+              setCode("");
             }}
           />
         </View>
-      </View>
+      </ScrollView>
       <View style={styles.voiceContainer}>
         <Record
           onSpeechEnd={(value) => {
@@ -103,10 +131,10 @@ const styles = StyleSheet.create({
     //justifyContent: "center",
   },
   textInput: {
+    height: 150,
     padding: 10,
     borderColor: "#d1d5db",
     borderWidth: 1,
-    height: 200,
     borderRadius: 5,
   },
   saveButton: {

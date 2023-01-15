@@ -13,7 +13,7 @@ export default function App() {
         screenOptions={({ route }) => ({
           tabBarIcon: () => {
             let iconName = "record";
-            if (route.name === "Record") {
+            if (route.name === "VANCE") {
               iconName = "record-vinyl";
             } else if (route.name === "History") {
               iconName = "history";
@@ -22,7 +22,7 @@ export default function App() {
           },
         })}
       >
-        <Tab.Screen name="Record" component={Home} />
+        <Tab.Screen name="VANCE" component={Home} />
         <Tab.Screen name="History" component={Notes} />
       </Tab.Navigator>
     </NavigationContainer>

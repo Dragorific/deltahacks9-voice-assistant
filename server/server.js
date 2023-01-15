@@ -60,7 +60,7 @@ async function main(){
                         res.json({"response": "Invalid device or file name"});
                     } else {
                         io.to(users[device]).emit("append", {"code": code, "file": file});
-                        res.json({"response": "Code successfully add to "+file+" in "+device});
+                        res.json({"response": "Code successfully add to " + file +" in "+device});
                     }
                 }
             }
@@ -76,8 +76,34 @@ async function main(){
         } else if (message.startsWith("turn bedroom light off")){
             io.to(users["arduino"]).emit("light", "off2");
             res.json({"response": "Turned bedroom light off"});
-        } else {
+        } else if (message.startsWith("can you introduce yourself")) {
+            message = "introduce yourself as vance as a butler"
+            const result = await api.sendMessage(message);
+            const response = result.response;
 
+            res.json({"response": response});
+        } else if (message.includes("weather")) {
+            // Take the last element in the string, assumed to be the location 
+            let messageList = message.split(" ");
+            let location = messageList[messageList.length - 1];
+            const weather_api_key = process.env.weather_api_key;
+            
+            // Query using Geocode API to find latitude and longitude
+            const latlon_query = 'http://api.openweathermap.org/geo/1.0/direct?q='+location+'&limit=5&appid='+ weather_api_key;
+            const responsell = await fetch(latlon_query);
+            let data = await responsell.json();
+            
+            // Take out the country
+            const country = data[0].country;
+            const state = data[0].state;
+            const weather_query = "https://api.openweathermap.org/data/2.5/weather?lat=" + data[0].lat + "&lon=" + data[0].lon + "&appid=" + weather_api_key;
+            //console.log("weatherq: ", weather_query)
+            const response = await fetch(weather_query);
+            data = await response.json();
+            //console.log(data);
+            const temp = Math.round(data.main.temp - 273.15);
+            res.json({"response": "The current weather in "+ country + ", " + state + ", " + location + " is around " + temp + " degrees celcius."});
+        } else {
             const result = await api.sendMessage(message);
             const response = result.response;
 
@@ -89,7 +115,6 @@ async function main(){
                 code = codeBlock;
                 console.log(code);
             }
-            
 
             res.json({"response": response});
         }

@@ -16,23 +16,6 @@ socket.on("append", (data) => {
     });
 })
 
-fetch("http://localhost:3000/api/voice-chat", {
-    method: "post",
-    body: JSON.stringify({"question": "add the code to test.py in desktop 2"}),
-    headers: {
-        "Content-Type": "application/json"
-    }
-})
-.then(function(response) {
-    return response.json();
-})
-.then((data)=>{
-    console.log(data);
-}) 
-.catch(err => {
-    console.log(err);
-});
-
 function typeString(str){
     const MATCH_REGEX = /[~!@#\$%\^&*()_+{}|:"<>?]/;
 
