@@ -13,15 +13,18 @@ import axios from "axios";
 export default function Home() {
   const [speechText, setSpeechText] = useState("");
   const [code, setCode] = useState("");
+  const [disableRec, setDisableRec] = useState(false);
 
   const callApi = async(prompt: string) => {
     const {data} = await axios.post("http://192.168.0.7:3000/api/voice-chat", { question: prompt });
     console.log(data);
+    console.log(data.response);
+    Tts.speak(data.response);
     return data;
   }
 
   Tts.getInitStatus().then(() => {
-    Tts.speak('Hello, world!');
+    Tts.setDefaultVoice('en-us-x-tpd-network');
   });
   
   return (
@@ -71,6 +74,7 @@ export default function Home() {
           onSpeechStart={() => {
             setSpeechText("");
           }}
+          recDisabled={disableRec}
         />
       </View>
     </View>

@@ -15,6 +15,7 @@ import Voice, {
 } from "@react-native-voice/voice";
 import { Easing } from "react-native-reanimated";
 type Props = {
+  recDisabled: boolean;
   onSpeechStart: () => void;
   onSpeechEnd: (result: any[]) => void;
 };

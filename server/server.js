@@ -23,6 +23,11 @@ async function main(){
 
     await api.initSession()
 
+    function string_between_strings(startStr, endStr, str) {
+        let pos = str.indexOf(startStr) + startStr.length;
+        return str.substring(pos, str.indexOf(endStr, pos));
+    }
+
     app.post("/api/voice-chat", async (req, res) => {
         const message = req.body.question.toLowerCase();
         console.log(message);
@@ -45,14 +50,15 @@ async function main(){
             const result = await api.sendMessage(message);
             const response = result.response;
 
-            let codeBlock = response.split("```");
-            if(codeBlock.length > 2){
-                codeBlock = codeBlock[1].split("\n").slice(1).join("\n")
-                if(codeBlock.length !== 0){
-                    code = codeBlock;
-                    console.log(code);
-                }
+            let codeBlock = string_between_strings("```",  "```", response);
+            console.log(codeBlock)
+
+            codeBlock = codeBlock.split("\n").slice(1).join("\n")
+            if(codeBlock.length !== 0){
+                code = codeBlock;
+                console.log(code);
             }
+            
 
             res.json({"response": response});
         }
