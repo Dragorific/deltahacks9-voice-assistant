@@ -2,7 +2,7 @@
 
 A comprehensive, server-side voice assistant that assists with you a variety of tasks, named VANCE. 
 
-###Some of the scenarios that are supported by this app are:
+##Some of the scenarios that are supported by this app are:
 - Productivity by generating code for user and pasting/writing to any connected client
 - Educating the user on general trivia, world issues, STEM, among many other subjects
 - Smart home interfacing
