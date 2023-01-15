@@ -45,6 +45,18 @@ async function main(){
                     res.json({"response": "Code successfully copied to "+device});
                 }
             }
+        } else if (message.startsWith("turn living room light on")){
+            io.to(users["arduino"]).emit("light", "on");
+            res.json({"response": "Turned living room light on"});
+        } else if (message.startsWith("turn living room light off")){
+            io.to(users["arduino"]).emit("light", "off");
+            res.json({"response": "Turned living room light off"});
+        } else if (message.startsWith("turn bedroom light on")){
+            io.to(users["arduino"]).emit("light", "on2");
+            res.json({"response": "Turned bedroom light on"});
+        } else if (message.startsWith("turn bedroom light off")){
+            io.to(users["arduino"]).emit("light", "off2");
+            res.json({"response": "Turned bedroom light off"});
         } else {
 
             const result = await api.sendMessage(message);
