@@ -8,8 +8,15 @@ import {
   Pressable,
 } from "react-native";
 import Record from "../Record";
+import axios from "axios";
 export default function Home() {
   const [speechText, setSpeechText] = useState("");
+
+  const callApi = async(prompt: string) => {
+    const {data} = await axios.post("http://192.168.0.7:3000/api/voice-chat", { question: prompt });
+    console.log(data);
+    return data;
+  }
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
@@ -50,6 +57,7 @@ export default function Home() {
         <Record
           onSpeechEnd={(value) => {
             setSpeechText(value[0]);
+            const result = callApi(value[0]);
           }}
           onSpeechStart={() => {
             setSpeechText("");
